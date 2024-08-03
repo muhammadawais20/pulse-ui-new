@@ -44,13 +44,14 @@ resource "cloudflare_pages_project" "app" {
   }
 
   build_config {
-    build_command       = "npm install && npx @cloudflare/next-on-pages@1"
+    build_command       = "export NODE_OPTIONS=--max_old_space_size=4096 && npm install && npx @cloudflare/next-on-pages@1"
     destination_dir     = ".vercel/output/static"
     build_caching       = true
   }
 
   deployment_configs {
     production {
+        compatibility_flags = ["nodejs_compat"]
         environment_variables = {
           GCP_LOGGING_PROJECT_ID = var.GCP_LOGGING_PROJECT_ID
           LOG_NAME = "${var.project_name}_app_log"
@@ -66,6 +67,7 @@ resource "cloudflare_pages_project" "app" {
     }
 
     preview {
+      compatibility_flags = ["nodejs_compat"]
       environment_variables = {
           GCP_LOGGING_PROJECT_ID = var.GCP_LOGGING_PROJECT_ID
           LOG_NAME = "${var.project_name}_app_log"
