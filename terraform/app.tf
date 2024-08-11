@@ -15,14 +15,14 @@ resource "cloudflare_record" "app" {
   allow_overwrite = true
 }
 
-resource "cloudflare_d1_database" "prod_configuration" {
+resource "cloudflare_r2_bucket" "prod-cache" {
   account_id = var.cloudflare_account_id
-  name       = "${var.project_name}_prod_config_database"
+  name       = "${var.project_name}-prod-cache"
 }
 
-resource "cloudflare_d1_database" "dev_configuration" {
+resource "cloudflare_r2_bucket" "dev-cache" {
   account_id = var.cloudflare_account_id
-  name       = "${var.project_name}_dev_config_database"
+  name       = "${var.project_name}-dev-cache"
 }
 
 resource "cloudflare_pages_project" "app" {
@@ -54,32 +54,28 @@ resource "cloudflare_pages_project" "app" {
         compatibility_flags = ["nodejs_compat"]
         environment_variables = {
           GCP_LOGGING_PROJECT_ID = var.GCP_LOGGING_PROJECT_ID
-          LOG_NAME = "${var.project_name}_app_log"
+          LOG_NAME = "${var.project_name}_prod_app_log"
         }
 
         secrets = {
           GCP_LOGGING_CREDENTIALS = var.GCP_LOGGING_CREDENTIALS
         }
 
-        d1_databases = {
-          CONFIGURATION = cloudflare_d1_database.prod_configuration.id
-        }
+        r2_buckets = cloudflare_r2_bucket.prod-cache
     }
 
     preview {
       compatibility_flags = ["nodejs_compat"]
       environment_variables = {
           GCP_LOGGING_PROJECT_ID = var.GCP_LOGGING_PROJECT_ID
-          LOG_NAME = "${var.project_name}_app_log"
+          LOG_NAME = "${var.project_name}_dev_app_log"
         }
 
         secrets = {
           GCP_LOGGING_CREDENTIALS = var.GCP_LOGGING_CREDENTIALS
         }
 
-        d1_databases = {
-          CONFIGURATION = cloudflare_d1_database.dev_configuration.id
-        }
+        r2_buckets = cloudflare_r2_bucket.dev-cache
     }
   }
 }
