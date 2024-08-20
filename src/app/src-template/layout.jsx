@@ -8,6 +8,9 @@ import axios from "axios";
 
 export const runtime = 'edge';
 
+import Layout from "../../components/src-template-component/Layout";
+
+
 export default function NewPageLayout({ children }) {
   useEffect(() => {
     axios.defaults.baseURL = process.env.API_BASE_URL;
@@ -17,7 +20,9 @@ export default function NewPageLayout({ children }) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
+        <Layout>
         {children}
+        </Layout>
       </PersistGate>
     </Provider>
   );
