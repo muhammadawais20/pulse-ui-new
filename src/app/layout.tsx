@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 import StyledComponentsRegistry from "@lib/registry";
 import { AppProvider } from "@context/AppContext";
 import StyledContext from "@context/StyledContext";
+import "../style.scss";
 
 import "../__server__";
 
